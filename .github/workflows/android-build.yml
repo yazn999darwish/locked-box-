@@ -1,4 +1,4 @@
-Name: "Godot Android Cloud Build"
+name: "Godot Android Cloud Build"
 
 on:
   push:
