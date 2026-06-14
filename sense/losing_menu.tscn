@@ -1,0 +1,99 @@
+[gd_scene load_steps=9 format=3 uid="uid://cqkgjbiewx6hl"]
+
+[ext_resource type="Script" uid="uid://cymwdpk75xhbn" path="res://scripts/losing_menu.gd" id="1_gdgx6"]
+[ext_resource type="Texture2D" uid="uid://ctgt3hmtqwh3n" path="res://png images/door1.png" id="2_b7h1d"]
+[ext_resource type="Texture2D" uid="uid://qh7r0tag4mxl" path="res://png images/1775276071440.png" id="2_s8u3c"]
+[ext_resource type="Texture2D" uid="uid://dl3nq8m7nq7ga" path="res://png images/1775401247438.png" id="4_b7h1d"]
+[ext_resource type="Texture2D" uid="uid://l82ugy6he8iq" path="res://png images/1775401802413.png" id="5_1uu14"]
+[ext_resource type="FontFile" uid="uid://efyfjn3y1y2x" path="res://font/Basal.ttf" id="7_44keg"]
+[ext_resource type="Texture2D" uid="uid://p8d1b8lwfuie" path="res://png images/1775829557500.png" id="7_n0dht"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_n0dht"]
+font = ExtResource("7_44keg")
+font_size = 150
+outline_size = 20
+outline_color = Color(0, 0, 0, 1)
+
+[node name="losing menu" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gdgx6")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(18.892157, 18.892157, 18.892157, 0.47100002)
+self_modulate = Color(18.892157, 18.892157, 18.892157, 1)
+texture_filter = 1
+position = Vector2(800, 340.5)
+scale = Vector2(12.531249, 11.421876)
+texture = ExtResource("2_b7h1d")
+
+[node name="Sprite2D4" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(800, 374.5)
+scale = Vector2(16.6875, 17.781248)
+texture = ExtResource("2_s8u3c")
+
+[node name="Button" type="Button" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 850.0
+offset_top = 400.0
+offset_right = 874.0
+offset_bottom = 424.0
+scale = Vector2(10, 10)
+icon = ExtResource("4_b7h1d")
+
+[node name="Button2" type="Button" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 500.0
+offset_top = 400.0
+offset_right = 524.0
+offset_bottom = 424.0
+scale = Vector2(10, 10)
+icon = ExtResource("5_1uu14")
+
+[node name="Label" type="Label" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 545.0
+offset_top = 80.0
+offset_right = 1045.0
+offset_bottom = 282.0
+text = "you lose"
+label_settings = SubResource("LabelSettings_n0dht")
+
+[node name="Label2" type="Label" parent="."]
+top_level = true
+texture_filter = 1
+layout_mode = 0
+offset_left = 699.99994
+offset_top = 297.0
+offset_right = 1399.0
+offset_bottom = 756.0
+rotation = 0.3351032
+scale = Vector2(0.378, 0.378)
+text = "to continue
+             V"
+label_settings = SubResource("LabelSettings_n0dht")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+
+[node name="Button3" type="Button" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 675.0
+offset_top = 400.0
+offset_right = 699.0
+offset_bottom = 424.0
+scale = Vector2(10, 10)
+icon = ExtResource("7_n0dht")
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="Button3" to="." method="_on_button_3_pressed"]

@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://bm8jwdemn7fts"]
+
+[ext_resource type="Texture2D" uid="uid://ykgcs2nv4o6b" path="res://png images/1777619231053.png" id="1_bokdw"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_taggv"]
+size = Vector2(4, 84)
+
+[node name="StaticBody2D" type="StaticBody2D" groups=["end"]]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(17.500004, 76.5)
+scale = Vector2(3.2812502, 3.03125)
+texture = ExtResource("1_bokdw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(17, 76)
+shape = SubResource("RectangleShape2D_taggv")
+debug_color = Color(0.35854542, 0.6023195, 0, 0.41960785)

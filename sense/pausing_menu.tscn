@@ -1,0 +1,73 @@
+[gd_scene load_steps=7 format=3 uid="uid://dm1xl5tf8kphd"]
+
+[ext_resource type="Texture2D" uid="uid://pw8ubu2xfwg5" path="res://png images/1775287933652.png" id="1_baok0"]
+[ext_resource type="Script" uid="uid://h8uqiriaf6qt" path="res://scripts/pausing_menu.gd" id="1_l787p"]
+[ext_resource type="Texture2D" uid="uid://cflfm87q1x6w6" path="res://png images/1775549375799.png" id="2_8ewde"]
+[ext_resource type="Texture2D" uid="uid://b04mk78rc43o2" path="res://png images/copilot_image_1770208059096.jpg" id="2_oroxk"]
+[ext_resource type="Texture2D" uid="uid://dl3nq8m7nq7ga" path="res://png images/1775401247438.png" id="3_yfwgb"]
+[ext_resource type="Texture2D" uid="uid://l82ugy6he8iq" path="res://png images/1775401802413.png" id="4_l787p"]
+
+[node name="pausing menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_l787p")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+modulate = Color(0, 0, 0, 0.35686275)
+texture_filter = 1
+position = Vector2(1462.75, 341.166)
+scale = Vector2(24.953125, 28.25)
+texture = ExtResource("2_oroxk")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(1462.75, 341.166)
+scale = Vector2(24.953125, 28.25)
+texture = ExtResource("1_baok0")
+
+[node name="Button" type="Button" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 1292.0001
+offset_top = 465.00003
+offset_right = 1316.0001
+offset_bottom = 489.00003
+scale = Vector2(7, 7)
+icon = ExtResource("2_8ewde")
+flat = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="Button2" type="Button" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 1285.0
+offset_top = 238.0
+offset_right = 1309.0
+offset_bottom = 262.0
+scale = Vector2(7, 7)
+icon = ExtResource("3_yfwgb")
+flat = true
+icon_alignment = 1
+
+[node name="Button3" type="Button" parent="."]
+process_mode = 3
+texture_filter = 1
+layout_mode = 0
+offset_left = 1305.0
+offset_top = 73.0
+offset_right = 1329.0
+offset_bottom = 97.0
+scale = Vector2(7, 7)
+icon = ExtResource("4_l787p")
+flat = true
+icon_alignment = 1
+expand_icon = true
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="Button3" to="." method="_on_button_3_pressed"]

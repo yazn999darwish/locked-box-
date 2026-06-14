@@ -1,0 +1,39 @@
+[gd_scene load_steps=6 format=3 uid="uid://dht57xvvic4uo"]
+
+[ext_resource type="Texture2D" uid="uid://pw8ubu2xfwg5" path="res://png images/1775287933652.png" id="1_vwn7r"]
+[ext_resource type="Texture2D" uid="uid://bgl3beyaffdww" path="res://png images/1775289999120.png" id="2_yn0su"]
+[ext_resource type="Script" uid="uid://dj7rylqyagid" path="res://scripts/watcher.gd" id="3_yn0su"]
+[ext_resource type="PackedScene" uid="uid://ddwl8j0m0685r" path="res://sense/canvas_layer.tscn" id="4_r74mx"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_r74mx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_vwn7r")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_yn0su")
+}],
+"loop": false,
+"name": &"open",
+"speed": 5.0
+}]
+
+[node name="watcher" type="AnimatedSprite2D"]
+texture_filter = 1
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_r74mx")
+animation = &"idle"
+script = ExtResource("3_yn0su")
+
+[node name="Timer" type="Timer" parent="."]
+autostart = true
+
+[node name="CanvasLayer" parent="." instance=ExtResource("4_r74mx")]
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

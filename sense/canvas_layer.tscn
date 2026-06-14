@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://ddwl8j0m0685r"]
+
+[ext_resource type="FontFile" uid="uid://beybqbqr0o4r2" path="res://font/Bold.ttf" id="1_6jrjk"]
+[ext_resource type="Script" uid="uid://b1cfu88ywjcqy" path="res://scripts/label.gd" id="2_h0t0r"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_iqmy8"]
+font = ExtResource("1_6jrjk")
+shadow_size = 1592
+shadow_color = Color(0, 0, 0, 1)
+
+[node name="CanvasLayer" type="CanvasLayer"]
+
+[node name="Label" type="Label" parent="."]
+top_level = true
+texture_filter = 1
+offset_left = 668.853
+offset_top = -7.000001
+offset_right = 696.0
+offset_bottom = 36.0
+scale = Vector2(6.567, 6.567)
+label_settings = SubResource("LabelSettings_iqmy8")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("2_h0t0r")
+
+[node name="Timer2" type="Timer" parent="."]
+autostart = true
+
+[connection signal="timeout" from="Timer2" to="Label" method="_on_timer_2_timeout"]

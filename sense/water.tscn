@@ -1,0 +1,41 @@
+[gd_scene load_steps=6 format=3 uid="uid://ddb1e178bicso"]
+
+[ext_resource type="Texture2D" uid="uid://cr3qdff4tuklh" path="res://png images/1778955210712.png" id="1_13a38"]
+[ext_resource type="Script" uid="uid://b8lycn58qsdua" path="res://scripts/water.gd" id="1_p0m8l"]
+[ext_resource type="AudioStream" uid="uid://cejf1pkvlbttb" path="res://music/gemini_generated_media_dde3b941.mp3" id="4_316e1"]
+[ext_resource type="PackedScene" uid="uid://cqkgjbiewx6hl" path="res://sense/losing_menu.tscn" id="4_eojgb"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sfubi"]
+size = Vector2(1829.5918, 499.99997)
+
+[node name="dangerous Area2D" type="Area2D"]
+script = ExtResource("1_p0m8l")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-79.500015, 140.99998)
+scale = Vector2(0.98, 0.98)
+shape = SubResource("RectangleShape2D_sfubi")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.49411765)
+texture_filter = 1
+position = Vector2(374.4875, 118.62048)
+scale = Vector2(8.380028, 5.0875907)
+texture = ExtResource("1_13a38")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.53333336)
+texture_filter = 1
+position = Vector2(-463.00003, 118.98155)
+scale = Vector2(8.380028, 5.100369)
+texture = ExtResource("1_13a38")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="losing menu" parent="CanvasLayer" instance=ExtResource("4_eojgb")]
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_316e1")
+stream_paused = true
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

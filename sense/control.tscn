@@ -1,0 +1,140 @@
+[gd_scene load_steps=9 format=3 uid="uid://hjcurboapq4b"]
+
+[ext_resource type="Script" uid="uid://c01rxnl3dpoak" path="res://scripts/control.gd" id="1_44u8a"]
+[ext_resource type="Texture2D" uid="uid://d1fm8vb1ibieu" path="res://png images/1775386534828.png" id="1_mpnqu"]
+[ext_resource type="Texture2D" uid="uid://y78dgsyr461" path="res://png images/1775386741590.png" id="2_th4xh"]
+[ext_resource type="Texture2D" uid="uid://qyjylxhyka1y" path="res://png images/Screenshot_20260405-153356~2.jpg" id="4_02u8s"]
+[ext_resource type="Texture2D" uid="uid://dl3nq8m7nq7ga" path="res://png images/1775401247438.png" id="5_b1gf6"]
+[ext_resource type="AudioStream" uid="uid://dqnkdwcqy5fj4" path="res://music/pattern_pending.mp3" id="5_u3a8g"]
+[ext_resource type="Texture2D" uid="uid://bh7wywlsb0i0m" path="res://png images/1779099616733.png" id="7_b1gf6"]
+[ext_resource type="Texture2D" uid="uid://b04mk78rc43o2" path="res://png images/copilot_image_1770208059096.jpg" id="8_y6sh2"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 470.0
+offset_top = 215.0
+offset_right = -297.0
+offset_bottom = -255.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_44u8a")
+metadata/_edit_vertical_guides_ = [-347.0]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(297, 148)
+scale = Vector2(1.315, 1.315)
+texture = ExtResource("4_02u8s")
+
+[node name="Button2" type="Button" parent="."]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.17662337
+anchor_top = 1.0
+anchor_right = 1.0181818
+anchor_bottom = 2.02809
+offset_top = 72.0
+offset_bottom = 72.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.534, 0.534)
+action_mode = 0
+icon = ExtResource("2_th4xh")
+flat = true
+autowrap_trim_flags = 192
+icon_alignment = 1
+expand_icon = true
+metadata/_edit_use_anchors_ = true
+
+[node name="Button" type="Button" parent="."]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.17922078
+anchor_top = 0.42696628
+anchor_right = 1.0383998
+anchor_bottom = 1.4550565
+offset_top = 74.0
+offset_bottom = 74.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.523, 0.523)
+action_mode = 0
+icon = ExtResource("1_mpnqu")
+flat = true
+autowrap_trim_flags = 192
+icon_alignment = 1
+expand_icon = true
+metadata/_edit_use_anchors_ = true
+
+[node name="Button3" type="Button" parent="."]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.7974026
+anchor_top = -1.5224719
+anchor_right = 1.6565818
+anchor_bottom = -0.49438176
+offset_top = 74.0
+offset_bottom = 74.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.523, 0.523)
+action_mode = 0
+icon = ExtResource("5_b1gf6")
+flat = true
+autowrap_trim_flags = 192
+icon_alignment = 1
+expand_icon = true
+metadata/_edit_use_anchors_ = true
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_u3a8g")
+volume_db = -7.0
+pitch_scale = 0.95
+autoplay = true
+parameters/looping = true
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+top_level = true
+texture_filter = 1
+position = Vector2(719.5, 224.50002)
+scale = Vector2(11.79, 15.90625)
+texture = ExtResource("7_b1gf6")
+
+[node name="Sprite2D4" type="Sprite2D" parent="."]
+modulate = Color(0.012617188, 0.012617188, 0.012617188, 1)
+texture_filter = 1
+position = Vector2(259.5, 11.750004)
+scale = Vector2(11.709999, 17.390627)
+texture = ExtResource("7_b1gf6")
+
+[node name="Sprite2D6" type="Sprite2D" parent="."]
+modulate = Color(0.012617188, 0.012617188, 0.012617188, 1)
+position = Vector2(615.0869, 36.62628)
+rotation = 0.3769911
+scale = Vector2(0.24389876, 0.2685949)
+texture = ExtResource("8_y6sh2")
+
+[node name="Sprite2D5" type="Sprite2D" parent="."]
+modulate = Color(18.892157, 18.892157, 18.892157, 1)
+self_modulate = Color(18.892157, 18.892157, 18.892157, 1)
+position = Vector2(612.197, 31.287638)
+rotation = 0.37699112
+scale = Vector2(0.23191994, 0.2530048)
+texture = ExtResource("8_y6sh2")
+
+[node name="Sprite2D7" type="Sprite2D" parent="."]
+modulate = Color(0, 0, 0, 1)
+self_modulate = Color(7.797087, 7.797087, 7.797087, 1)
+position = Vector2(611.99994, 31.000002)
+rotation = 0.37699112
+scale = Vector2(0.08854604, 0.0946984)
+texture = ExtResource("8_y6sh2")
+
+[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Button3" to="." method="_on_button_3_pressed"]

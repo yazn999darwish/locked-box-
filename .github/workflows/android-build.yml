@@ -1,0 +1,67 @@
+name: "Godot Android Cloud Build"
+
+on:
+  push:
+    branches:
+      - main  # اجعلها master إذا كان هذا اسم الفرع الرئيسي لديك
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. جلب ملفات المشروع من مستودع GitHub
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      # 2. إعداد الجافا (مطلوب إلزاميًا لبناء أندرويد في جودو 4)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 3. إعداد مسار Android SDK وتمريره إلى إعدادات المحرك الداخلية
+      - name: Configure Godot Android SDK Path
+        run: |
+          mkdir -p ~/.config/godot
+          echo '[gd_resource type="EditorSettings" format=3]' > ~/.config/godot/editor_settings-4.tres
+          echo '' >> ~/.config/godot/editor_settings-4.tres
+          echo '[resource]' >> ~/.config/godot/editor_settings-4.tres
+          echo "export/android/android_sdk_path = \"$ANDROID_HOME\"" >> ~/.config/godot/editor_settings-4.tres
+
+      # 4. تثبيت محرك Godot (تأكد من كتابة رقم نسختك بدقة مكان 4.5.1)
+      - name: Setup Godot Engine
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.5.1
+          use-dotnet: false
+
+      # 5. تحميل وتثبيت قوالب التصدير (Export Templates) الخاصة بأندرويد سحابياً
+      - name: Download Export Templates
+        run: |
+          mkdir -p ~/.local/share/godot/export_templates/4.5.1.stable
+          wget https://github.com/godotengine/godot/releases/download/4.5.1-stable/Godot_v4.5.1-stable_export_templates.tpz
+          unzip Godot_v4.5.1-stable_export_templates.tpz -d /tmp/godot_templates
+          mv /tmp/godot_templates/templates/* ~/.local/share/godot/export_templates/4.5.1.stable/
+          rm -rf /tmp/godot_templates Godot_v4.5.1-stable_export_templates.tpz
+
+      # 6. توليد ملف التوقيع debug.keystore تلقائياً ليتوافق مع الإعدادات
+      - name: Generate Debug Keystore
+        run: |
+          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+
+      # 7. إنشاء مجلد المخرجات للعبة
+      - name: Create Build Directory
+        run: mkdir -p build/android
+
+      # 8. بدء عملية التصدير الفعالة واستخراج ملف الـ APK
+      - name: Export Android APK
+        run: godot --headless --export-release "Android" build/android/game.apk
+
+      # 9. رفع ملف الـ APK النهائي إلى سيرفرات جيتهاب لتتمكن من تحميله
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: My-Android-Game
+          path: build/android/game.apk

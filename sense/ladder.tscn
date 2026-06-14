@@ -1,0 +1,118 @@
+[gd_scene load_steps=4 format=3 uid="uid://rhswln1cw2a8"]
+
+[ext_resource type="Texture2D" uid="uid://bme8b2sm6mg04" path="res://png images/1775306415002.png" id="1_s88jw"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_oewqb"]
+size = Vector2(22.781342, 8.746354)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s88jw"]
+size = Vector2(21.865898, 10.932932)
+
+[node name="ladder" type="StaticBody2D"]
+texture_filter = 1
+scale = Vector2(1.372, 1.372)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(13.5, -18)
+scale = Vector2(1.84375, 2.125)
+texture = ExtResource("1_s88jw")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(13.500002, 48.834496)
+scale = Vector2(1.8437501, 2.0728436)
+texture = ExtResource("1_s88jw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(13.999997, 56.112244)
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("RectangleShape2D_oewqb")
+one_way_collision = true
+
+[node name="CollisionShape2D6" type="CollisionShape2D" parent="."]
+position = Vector2(13.390668, 75)
+scale = Vector2(0.99999994, 0.99999994)
+shape = SubResource("RectangleShape2D_oewqb")
+one_way_collision = true
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
+position = Vector2(13, 30.247812)
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("RectangleShape2D_oewqb")
+one_way_collision = true
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="."]
+position = Vector2(13, 1)
+shape = SubResource("RectangleShape2D_oewqb")
+one_way_collision = true
+
+[node name="CollisionShape2D4" type="CollisionShape2D" parent="."]
+position = Vector2(12.273998, -17.857141)
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("RectangleShape2D_oewqb")
+one_way_collision = true
+
+[node name="CollisionShape2D16" type="CollisionShape2D" parent="."]
+position = Vector2(12.273998, -28.061224)
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("RectangleShape2D_oewqb")
+one_way_collision = true
+
+[node name="CollisionShape2D5" type="CollisionShape2D" parent="."]
+position = Vector2(12.273998, -45.918358)
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("RectangleShape2D_oewqb")
+one_way_collision = true
+
+[node name="CollisionShape2D7" type="CollisionShape2D" parent="."]
+position = Vector2(13.119532, -37.536434)
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("RectangleShape2D_s88jw")
+one_way_collision = true
+
+[node name="CollisionShape2D8" type="CollisionShape2D" parent="."]
+position = Vector2(13.483962, -10.20408)
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("RectangleShape2D_s88jw")
+one_way_collision = true
+
+[node name="CollisionShape2D9" type="CollisionShape2D" parent="."]
+position = Vector2(13.848393, 15.306118)
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("RectangleShape2D_s88jw")
+one_way_collision = true
+
+[node name="CollisionShape2D10" type="CollisionShape2D" parent="."]
+position = Vector2(13.119529, -36.80757)
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("RectangleShape2D_s88jw")
+one_way_collision = true
+
+[node name="CollisionShape2D11" type="CollisionShape2D" parent="."]
+position = Vector2(13.848393, 20.772594)
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("RectangleShape2D_s88jw")
+one_way_collision = true
+
+[node name="CollisionShape2D12" type="CollisionShape2D" parent="."]
+position = Vector2(13.119528, 38.994164)
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("RectangleShape2D_s88jw")
+one_way_collision = true
+
+[node name="CollisionShape2D13" type="CollisionShape2D" parent="."]
+position = Vector2(13.119528, 65.59766)
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("RectangleShape2D_s88jw")
+one_way_collision = true
+
+[node name="CollisionShape2D14" type="CollisionShape2D" parent="."]
+position = Vector2(13.119528, 47.376087)
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("RectangleShape2D_s88jw")
+one_way_collision = true
+
+[node name="CollisionShape2D15" type="CollisionShape2D" parent="."]
+position = Vector2(13.848393, 6.1953344)
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("RectangleShape2D_s88jw")
+one_way_collision = true

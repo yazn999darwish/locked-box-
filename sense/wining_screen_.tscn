@@ -1,0 +1,63 @@
+[gd_scene load_steps=7 format=3 uid="uid://c1l1fi6wis4ey"]
+
+[ext_resource type="Script" uid="uid://bl4km6ycplskj" path="res://scripts/wining_screen_.gd" id="1_ig3d8"]
+[ext_resource type="Texture2D" uid="uid://pw8ubu2xfwg5" path="res://png images/1775287933652.png" id="2_ig3d8"]
+[ext_resource type="Texture2D" uid="uid://cflfm87q1x6w6" path="res://png images/1775549375799.png" id="4_7m6mb"]
+[ext_resource type="Texture2D" uid="uid://dl3nq8m7nq7ga" path="res://png images/1775401247438.png" id="4_hyqd6"]
+[ext_resource type="FontFile" uid="uid://efyfjn3y1y2x" path="res://font/Basal.ttf" id="6_vtcc0"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_n0dht"]
+font = ExtResource("6_vtcc0")
+font_size = 150
+outline_size = 20
+outline_color = Color(0, 0, 0, 1)
+
+[node name="win menu" type="Control" groups=["win"]]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ig3d8")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(795.99994, 313.342)
+scale = Vector2(25.125, 23.021374)
+texture = ExtResource("2_ig3d8")
+
+[node name="Button" type="Button" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 500.0
+offset_top = 400.0
+offset_right = 524.0
+offset_bottom = 424.0
+scale = Vector2(10, 10)
+icon = ExtResource("4_hyqd6")
+
+[node name="Button2" type="Button" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 850.0
+offset_top = 400.0
+offset_right = 874.0
+offset_bottom = 424.0
+scale = Vector2(10, 10)
+icon = ExtResource("4_7m6mb")
+
+[node name="Label" type="Label" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 537.0
+offset_top = 150.0
+offset_right = 1037.0
+offset_bottom = 352.0
+text = " you win!"
+label_settings = SubResource("LabelSettings_n0dht")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]

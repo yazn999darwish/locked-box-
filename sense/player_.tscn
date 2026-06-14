@@ -1,0 +1,364 @@
+[gd_scene load_steps=26 format=3 uid="uid://bjeka8bayy67b"]
+
+[ext_resource type="Script" uid="uid://cyw1ekx8hii03" path="res://scripts/player.gd" id="1_7x05u"]
+[ext_resource type="Texture2D" uid="uid://bi7e4o0rela3h" path="res://png images/copilot_image_1770208842669.jpg" id="1_aypxm"]
+[ext_resource type="Texture2D" uid="uid://cwfoyuuxqi4oi" path="res://png images/1775285390210.png" id="3_2xl8l"]
+[ext_resource type="PackedScene" uid="uid://cqkgjbiewx6hl" path="res://sense/losing_menu.tscn" id="4_lr5mp"]
+[ext_resource type="PackedScene" uid="uid://c1l1fi6wis4ey" path="res://sense/wining screen .tscn" id="5_afkyg"]
+[ext_resource type="PackedScene" uid="uid://dm1xl5tf8kphd" path="res://sense/pausing_menu.tscn" id="6_ir5hg"]
+[ext_resource type="Texture2D" uid="uid://u7y2p4hc6t0x" path="res://png images/1775400931495.png" id="7_5a0sa"]
+[ext_resource type="AudioStream" uid="uid://q4ftnlkg7v66" path="res://music/AudioCutter_Minecraft WoodSound Effect(MP3_320K).mp3" id="8_5a0sa"]
+[ext_resource type="Texture2D" uid="uid://cflfm87q1x6w6" path="res://png images/1775549375799.png" id="8_06qi6"]
+[ext_resource type="AudioStream" uid="uid://cd005p0p7tavw" path="res://music/AudioCutter_pattern_pending.mp3" id="9_ods6f"]
+[ext_resource type="Texture2D" uid="uid://c867diqik5wy5" path="res://png images/1777180201413.png" id="11_3r46k"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_06qi6"]
+friction = 0.01
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_y52ji"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2xl8l"]
+size = Vector2(26, 7)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jqpch"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5a0sa"]
+size = Vector2(26, 1)
+
+[sub_resource type="Animation" id="Animation_06qi6"]
+length = 0.001
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:scale:x")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(-0.050849702, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:scale:y")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(-0.055, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CanvasLayer/Sprite2D2:modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0.011764706, 0.011764706, 0.011764706, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_3r46k"]
+resource_name = "idle "
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_rkfa1"]
+resource_name = "jump"
+length = 0.6
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:scale:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 2, 2),
+"points": PackedFloat32Array(-0.050849702, -0.25, 0, 0.25, 0, -0.051, -0.05666667, 0, 0.043333337, 0, -0.050849702, -0.10000001, 0, 0, 0),
+"times": PackedFloat32Array(0, 0.34, 0.6)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:scale:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 2, 2),
+"points": PackedFloat32Array(-0.055, -0.25, 0, 0.25, 0, -0.075, -0.05666667, 0, 0.043333337, 0, -0.055, -0.10000001, 0, 0, 0),
+"times": PackedFloat32Array(0, 0.34, 0.6)
+}
+
+[sub_resource type="Animation" id="Animation_ods6f"]
+resource_name = "walk"
+length = 0.9
+loop_mode = 2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.19, 0.48, 0.82),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.17453292, 0.0, -0.17453292]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_3r46k"]
+_data = {
+&"RESET": SubResource("Animation_06qi6"),
+&"idle ": SubResource("Animation_3r46k"),
+&"jump": SubResource("Animation_rkfa1"),
+&"walk": SubResource("Animation_ods6f")
+}
+
+[sub_resource type="Animation" id="Animation_8vqw6"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../CanvasLayer/Sprite2D2:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0.011764706, 0.011764706, 0.011764706, 0.2901961)]
+}
+
+[sub_resource type="Animation" id="Animation_s1xmn"]
+resource_name = "no plure"
+length = 0.1
+loop_mode = 2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../CanvasLayer/Sprite2D2:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.08),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_h7i76"]
+resource_name = "plure"
+length = 0.3
+loop_mode = 2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../CanvasLayer/Sprite2D2:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.19, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(0.011764706, 0.011764706, 0.011764706, 0.2901961), Color(0.011764706, 0.011764706, 0.011764706, 0.4509804), Color(0.011764706, 0.011764706, 0.011764706, 0.6039216)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_g21yt"]
+_data = {
+&"RESET": SubResource("Animation_8vqw6"),
+&"no plure": SubResource("Animation_s1xmn"),
+&"plure": SubResource("Animation_h7i76")
+}
+
+[node name="player" type="RigidBody2D" groups=["box", "player"]]
+mass = 1.2
+physics_material_override = SubResource("PhysicsMaterial_06qi6")
+gravity_scale = 0.01
+can_sleep = false
+lock_rotation = true
+script = ExtResource("1_7x05u")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-0.08595979, -4.7683716e-07)
+scale = Vector2(-0.050849702, -0.055)
+texture = ExtResource("1_aypxm")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(1.5, 1.5)
+shape = SubResource("RectangleShape2D_y52ji")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+process_mode = 3
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="CanvasLayer"]
+modulate = Color(1, 1, 1, 0.5176471)
+texture_filter = 1
+position = Vector2(266, 614)
+rotation = -3.1415927
+scale = Vector2(12.649344, 12.090161)
+texture_normal = ExtResource("3_2xl8l")
+passby_press = true
+action = "ui_left"
+
+[node name="TouchScreenButton2" type="TouchScreenButton" parent="CanvasLayer"]
+modulate = Color(1, 1, 1, 0.49411765)
+texture_filter = 1
+position = Vector2(305, 419.00003)
+scale = Vector2(13.437499, 12.3125)
+texture_normal = ExtResource("3_2xl8l")
+passby_press = true
+action = "ui_right"
+
+[node name="TouchScreenButton3" type="TouchScreenButton" parent="CanvasLayer"]
+modulate = Color(1, 1, 1, 0.47843137)
+texture_filter = 1
+position = Vector2(1170, 534.99994)
+rotation = -1.5707964
+scale = Vector2(11.008638, 15.732439)
+texture_normal = ExtResource("3_2xl8l")
+passby_press = true
+action = "ui_up"
+
+[node name="TouchScreenButton4" type="TouchScreenButton" parent="CanvasLayer"]
+modulate = Color(1, 1, 1, 0.5372549)
+texture_filter = 1
+position = Vector2(1257, 167)
+scale = Vector2(5.385554, 9.113422)
+texture_normal = ExtResource("3_2xl8l")
+passby_press = true
+action = "ui_select"
+
+[node name="losing menu" parent="CanvasLayer" instance=ExtResource("4_lr5mp")]
+visible = false
+
+[node name="win menu" parent="CanvasLayer" instance=ExtResource("5_afkyg")]
+visible = false
+
+[node name="pausing menu" parent="CanvasLayer" instance=ExtResource("6_ir5hg")]
+visible = false
+
+[node name="TouchScreenButton5" type="TouchScreenButton" parent="CanvasLayer"]
+texture_filter = 1
+position = Vector2(1214, 3.000061)
+scale = Vector2(7.562508, 6.750001)
+texture_normal = ExtResource("7_5a0sa")
+action = "ui_paste"
+
+[node name="TouchScreenButton6" type="TouchScreenButton" parent="CanvasLayer"]
+texture_filter = 1
+position = Vector2(76.00001, 53)
+scale = Vector2(6.9999995, 7.1875)
+texture_normal = ExtResource("8_06qi6")
+
+[node name="Sprite2D2" type="Sprite2D" parent="CanvasLayer"]
+modulate = Color(0.011764706, 0.011764706, 0.011764706, 0.2901961)
+position = Vector2(656.75, 324.00006)
+scale = Vector2(57.015625, 28.437502)
+texture = ExtResource("11_3r46k")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+texture_filter = 1
+position = Vector2(0, -20)
+zoom = Vector2(2, 2)
+limit_left = -600
+limit_right = 600
+position_smoothing_enabled = true
+position_smoothing_speed = 7.2
+rotation_smoothing_enabled = true
+
+[node name="rc" type="RayCast2D" parent="."]
+position = Vector2(13.377, 13.953)
+scale = Vector2(0.883, 0.498)
+target_position = Vector2(0, 15)
+
+[node name="rc2" type="RayCast2D" parent="."]
+position = Vector2(-12.822, 14.34)
+scale = Vector2(0.844, 0.487)
+target_position = Vector2(0, 15)
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.1
+one_shot = true
+autostart = true
+
+[node name="Timer2" type="Timer" parent="."]
+autostart = true
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(0, 13.5)
+shape = SubResource("RectangleShape2D_2xl8l")
+
+[node name="Area2D2" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D2"]
+scale = Vector2(1.815, 1.815)
+shape = SubResource("RectangleShape2D_jqpch")
+
+[node name="audio" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_5a0sa")
+volume_db = -10.0
+
+[node name="Area2D3" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D3"]
+position = Vector2(-1, 14.5)
+shape = SubResource("RectangleShape2D_5a0sa")
+debug_color = Color(0.7, 0, 0, 0.41960785)
+
+[node name="win" type="AudioStreamPlayer" parent="."]
+process_mode = 3
+stream = ExtResource("9_ods6f")
+volume_db = -20.0
+pitch_scale = 0.8
+
+[node name="anime" type="AnimationPlayer" parent="."]
+deterministic = true
+libraries = {
+&"": SubResource("AnimationLibrary_3r46k")
+}
+speed_scale = 4.0
+
+[node name="animee" type="AnimationPlayer" parent="."]
+root_node = NodePath("../anime")
+libraries = {
+&"": SubResource("AnimationLibrary_g21yt")
+}
+
+[connection signal="pressed" from="CanvasLayer/TouchScreenButton5" to="." method="_on_touch_screen_button_5_pressed"]
+[connection signal="pressed" from="CanvasLayer/TouchScreenButton6" to="." method="_on_touch_screen_button_6_pressed"]
+[connection signal="released" from="CanvasLayer/TouchScreenButton6" to="." method="_on_touch_screen_button_6_released"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="timeout" from="Timer2" to="." method="_on_timer_2_timeout"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
+[connection signal="body_entered" from="Area2D2" to="." method="_on_area_2d_2_body_entered"]
+[connection signal="body_entered" from="Area2D3" to="." method="_on_area_2d_3_body_entered"]

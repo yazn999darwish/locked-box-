@@ -1,0 +1,46 @@
+[gd_scene load_steps=7 format=3 uid="uid://bypbtluqjhjyv"]
+
+[ext_resource type="Texture2D" uid="uid://b04mk78rc43o2" path="res://png images/copilot_image_1770208059096.jpg" id="1_qnen8"]
+[ext_resource type="Script" uid="uid://nb3s7epipmqb" path="res://scripts/box.gd" id="1_xdwnk"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_xdwnk"]
+rough = true
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xdwnk"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4ko4i"]
+size = Vector2(50, 58)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mmpit"]
+size = Vector2(68, 57)
+
+[node name="big box" type="RigidBody2D" groups=["box"]]
+physics_material_override = SubResource("PhysicsMaterial_xdwnk")
+lock_rotation = true
+script = ExtResource("1_xdwnk")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(8.34465e-07, 0.029506743)
+scale = Vector2(0.30414745, 0.32541385)
+texture = ExtResource("1_qnen8")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(3.269, 3.269)
+shape = SubResource("RectangleShape2D_xdwnk")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(36, 1)
+shape = SubResource("RectangleShape2D_4ko4i")
+
+[node name="Area2D2" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D2"]
+position = Vector2(-24, 0.5)
+shape = SubResource("RectangleShape2D_mmpit")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
+[connection signal="body_entered" from="Area2D2" to="." method="_on_area_2d_2_body_entered"]
+[connection signal="body_exited" from="Area2D2" to="." method="_on_area_2d_2_body_exited"]

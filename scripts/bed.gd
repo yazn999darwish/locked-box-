@@ -1,0 +1,19 @@
+extends StaticBody2D
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+		
