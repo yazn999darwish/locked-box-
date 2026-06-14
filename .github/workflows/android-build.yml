@@ -21,25 +21,38 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # 3. ضبط مسار Android SDK بطريقة محمية تمنع أخطاء الصياغة
-      - name: Configure Godot Android SDK Path
+      # 3. توليد مجلد الأندرويد ومجلد إعدادات جودو في النظام السحابي
+      - name: Create Required Directories
         run: |
           mkdir -p ~/.config/godot
+          mkdir -p ~/.android
+
+      # 4. توليد ملف keystore الرقمي في المسار الافتراضي للنظام
+      - name: Generate Debug Keystore
+        run: |
+          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+
+      # 5. ضبط مسار الـ SDK والمفاتيح عالمياً داخل إعدادات جودو
+      - name: Configure Godot Android Editor Settings
+        run: |
           cat << 'EOF' > ~/.config/godot/editor_settings-4.tres
           [gd_resource type="EditorSettings" format=3]
 
           [resource]
           export/android/android_sdk_path = "/usr/local/lib/android/sdk"
+          export/android/debug_keystore = "/home/runner/.android/debug.keystore"
+          export/android/debug_username = "androiddebugkey"
+          export/android/debug_password = "android"
           EOF
 
-      # 4. تثبيت محرك Godot الاصدار المتوافق مع مشروعك
+      # 6. تثبيت محرك Godot الاصدار المتوافق مع مشروعك
       - name: Setup Godot Engine
         uses: chickensoft-games/setup-godot@v2
         with:
           version: 4.5.1
           use-dotnet: false
 
-      # 5. تحميل وفك قوالب التصدير للأندرويد سحابياً
+      # 7. تحميل وفك قوالب التصدير للأندرويد سحابياً
       - name: Download Export Templates
         run: |
           mkdir -p ~/.local/share/godot/export_templates/4.5.1.stable
@@ -48,49 +61,54 @@ jobs:
           mv /tmp/godot_templates/templates/* ~/.local/share/godot/export_templates/4.5.1.stable/
           rm -rf /tmp/godot_templates Godot_v4.5.1-stable_export_templates.tpz
 
-      # 6. توليد ملف keystore الرقمي للتوقيع سحابياً
-      - name: Generate Debug Keystore
-        run: |
-          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-
-      # 7. فحص وتصحيح ملف إعدادات التصدير تلقائياً وتخطي حظر com.example
+      # 8. فحص وتصحيح ملف إعدادات التصدير وتطهيره من أي تعارض
       - name: Auto Fix Export Presets Config
         shell: python
         run: |
-          import os, re
+          import os
           preset_path = "export_presets.cfg"
           if os.path.exists(preset_path):
               with open(preset_path, "r", encoding="utf-8") as f:
-                  text = f.read()
+                  content = f.read()
               
-              # تغيير اسم الحزمة لتخطي حظر التصدير في جودو
-              text = re.sub(r'package/unique_name\s*=\s*".*"', 'package/unique_name="com.yazn.mutasmproject"', text)
+              print("--- Original export_presets.cfg ---")
+              print(content)
               
-              # إجبار إعدادات الـ Debug على استخدام المفتاح المولد
-              text = re.sub(r'keystore/debug\s*=\s*".*"', 'keystore/debug="res://debug.keystore"', text)
-              text = re.sub(r'keystore/debug_user\s*=\s*".*"', 'keystore/debug_user="androiddebugkey"', text)
-              text = re.sub(r'keystore/debug_password\s*=\s*".*"', 'keystore/debug_password="android"', text)
+              lines = content.splitlines()
+              updated_lines = []
+              for line in lines:
+                  line_strip = line.strip()
+                  # تصحيح اسم الحزمة الافتراضي لمنع حظر جودو
+                  if line_strip.startswith("package/unique_name="):
+                      line = 'package/unique_name="com.yazn.mutasmproject"'
+                  # إيقاف البناء المخصص لضمان استخدام القوالب التي قمنا بتحميلها
+                  elif line_strip.startswith("custom_template/use_custom_build="):
+                      line = 'custom_template/use_custom_build=false'
+                  # تصفير المفاتيح داخل الإعداد ليقوم المحرك تلقائياً بالاعتماد على المفتاح العالمي المولد
+                  elif line_strip.startswith("keystore/debug="):
+                      line = 'keystore/debug=""'
+                  elif line_strip.startswith("keystore/release="):
+                      line = 'keystore/release=""'
+                  updated_lines.append(line)
               
-              # إجبار إعدادات الـ Release أيضاً على استخدام نفس المفتاح لمنع أخطاء التكوين
-              text = re.sub(r'keystore/release\s*=\s*".*"', 'keystore/release="res://debug.keystore"', text)
-              text = re.sub(r'keystore/release_user\s*=\s*".*"', 'keystore/release_user="androiddebugkey"', text)
-              text = re.sub(r'keystore/release_password\s*=\s*".*"', 'keystore/release_password="android"', text)
-              
+              updated_content = "\n".join(updated_lines)
               with open(preset_path, "w", encoding="utf-8") as f:
-                  f.write(text)
-              print("export_presets.cfg updated successfully.")
+                  f.write(updated_content)
+                  
+              print("--- Updated export_presets.cfg ---")
+              print(updated_content)
           else:
-              print("Warning: export_presets.cfg not found in root!")
+              print("Critical Warning: export_presets.cfg not found at root directory!")
 
-      # 8. إنشاء مجلد المخرجات
+      # 9. إنشاء مجلد المخرجات
       - name: Create Build Directory
         run: mkdir -p build/android
 
-      # 9. تصدير ملف الـ APK بنمط التصحيح والاختبار (Debug لضمان استقرار البناء الأول)
+      # 10. تصدير ملف الـ APK بنمط التصحيح (Debug)
       - name: Export Android APK
         run: godot --headless --export-debug "Android" build/android/game.apk
 
-      # 10. رفع ملف الـ APK لتتمكن من تحميله مباشرة
+      # 11. رفع ملف الـ APK لتتمكن من تحميله مباشرة
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
