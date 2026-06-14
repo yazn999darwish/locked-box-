@@ -61,7 +61,7 @@ jobs:
           mv /tmp/godot_templates/templates/* ~/.local/share/godot/export_templates/4.5.1.stable/
           rm -rf /tmp/godot_templates Godot_v4.5.1-stable_export_templates.tpz
 
-      # 8. فحص وتصحيح ملف إعدادات التصدير وتطهيره من أي تعارض
+      # 8. فحص وتصحيح ملف إعدادات التصدير وتطهيره من أي تعارض في المفاتيح
       - name: Auto Fix Export Presets Config
         shell: python
         run: |
@@ -81,14 +81,22 @@ jobs:
                   # تصحيح اسم الحزمة الافتراضي لمنع حظر جودو
                   if line_strip.startswith("package/unique_name="):
                       line = 'package/unique_name="com.yazn.mutasmproject"'
-                  # إيقاف البناء المخصص لضمان استخدام القوالب التي قمنا بتحميلها
+                  # إيقاف البناء المخصص لضمان استخدام القوالب المستقرة المعرفة بالأعلى
                   elif line_strip.startswith("custom_template/use_custom_build="):
                       line = 'custom_template/use_custom_build=false'
-                  # تصفير المفاتيح داخل الإعداد ليقوم المحرك تلقائياً بالاعتماد على المفتاح العالمي المولد
+                  # تصفير شامل وكامل لجميع حقول المفاتيح محلياً لمنع التناقض والتعارض
                   elif line_strip.startswith("keystore/debug="):
                       line = 'keystore/debug=""'
+                  elif line_strip.startswith("keystore/debug_user="):
+                      line = 'keystore/debug_user=""'
+                  elif line_strip.startswith("keystore/debug_password="):
+                      line = 'keystore/debug_password=""'
                   elif line_strip.startswith("keystore/release="):
                       line = 'keystore/release=""'
+                  elif line_strip.startswith("keystore/release_user="):
+                      line = 'keystore/release_user=""'
+                  elif line_strip.startswith("keystore/release_password="):
+                      line = 'keystore/release_password=""'
                   updated_lines.append(line)
               
               updated_content = "\n".join(updated_lines)
