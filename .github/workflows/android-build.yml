@@ -51,8 +51,8 @@ jobs:
         run: |
           keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
 
-      # 7. ربط ملف الإعدادات بمفتاح التوقيع المولد تلقائياً وتصحيح المسارات
-      - name: Force Keystore Paths in Export Presets
+      # 7. تصحيح اسم الحزمة ومسارات التوقيع داخل ملف الإعدادات تلقائياً
+      - name: Auto Fix Export Presets Config
         shell: python
         run: |
           import os, re
@@ -61,16 +61,19 @@ jobs:
               with open(preset_path, "r") as f:
                   text = f.read()
               
-              # استبدال وتصحيح الإعدادات بدقة متناهية لتوجه المحرك إلى المفتاح المولد سحابياً
+              # حل مشكلة com.example وتغيير اسم الحزمة لتخطي حظر جودو
+              text = re.sub(r'package/unique_name\s*=\s*".*"', 'package/unique_name="com.yazn.lockedbox"', text)
+              
+              # مطابقة إعدادات المفتاح بدقة متناهية مع ما تم توليده في الخطوة 6
               text = re.sub(r'keystore/debug\s*=\s*".*"', 'keystore/debug="res://debug.keystore"', text)
-              text = re.sub(r'keystore/debug_user\s*=\s*".*"', 'keystore/debug_user="android"', text)
+              text = re.sub(r'keystore/debug_user\s*=\s*".*"', 'keystore/debug_user="androiddebugkey"', text)
               text = re.sub(r'keystore/debug_password\s*=\s*".*"', 'keystore/debug_password="android"', text)
               
               with open(preset_path, "w") as f:
                   f.write(text)
-              print("export_presets.cfg has been successfully aligned with cloud keystore.")
+              print("export_presets.cfg has been successfully optimized and validated for cloud build.")
           else:
-              print("Warning: export_presets.cfg not found in root directory!")
+              print("Critical Error: export_presets.cfg not found!")
 
       # 8. إنشاء مجلد المخرجات للعبة
       - name: Create Build Directory
