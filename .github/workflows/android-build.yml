@@ -21,38 +21,43 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # 3. إنشاء المجلدات المطلوبة للنظام
+      # 3. تعريف مسارات الـ Android SDK وإضافتها للـ PATH ليتعرف النظام على أمر adb
+      - name: Setup Android SDK Paths
+        run: |
+          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "/usr/local/lib/android/sdk/platform-tools" >> $GITHUB_PATH
+
+      # 4. إنشاء المجلدات المطلوبة للنظام وجودو
       - name: Create Required Directories
         run: |
           mkdir -p ~/.config/godot
           mkdir -p ~/.android
+          mkdir -p build/android
 
-      # 4. توليد ملف keystore الرقمي في المسار الافتراضي للنظام
+      # 5. توليد ملف keystore الرقمي في المسار الصحيح
       - name: Generate Debug Keystore
         run: |
           keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
 
-      # 5. ضبط مسار الـ SDK والمفاتيح عالمياً داخل إعدادات جودو
-      - name: Configure Godot Android Editor Settings
+      # 6. ضبط إعدادات جودو العامة للكشف عن مسار الـ SDK والمفاتيح بشكل مضمون وبدون أخطاء رموز
+      - name: Configure Godot Editor Settings
         run: |
-          cat << 'EOF' > ~/.config/godot/editor_settings-4.tres
-          [gd_resource type="EditorSettings" format=3]
+          echo '[gd_resource type="EditorSettings" format=3]' > ~/.config/godot/editor_settings-4.tres
+          echo '' >> ~/.config/godot/editor_settings-4.tres
+          echo '[resource]' >> ~/.config/godot/editor_settings-4.tres
+          echo 'export/android/android_sdk_path = "/usr/local/lib/android/sdk"' >> ~/.config/godot/editor_settings-4.tres
+          echo 'export/android/debug_keystore = "/home/runner/.android/debug.keystore"' >> ~/.config/godot/editor_settings-4.tres
+          echo 'export/android/debug_username = "androiddebugkey"' >> ~/.config/godot/editor_settings-4.tres
+          echo 'export/android/debug_password = "android"' >> ~/.config/godot/editor_settings-4.tres
 
-          [resource]
-          export/android/android_sdk_path = "/usr/local/lib/android/sdk"
-          export/android/debug_keystore = "/home/runner/.android/debug.keystore"
-          export/android/debug_username = "androiddebugkey"
-          export/android/debug_password = "android"
-          EOF
-
-      # 6. تثبيت محرك Godot الاصدار المتوافق مع مشروعك
+          # 7. تثبيت محرك Godot الإصدار 4.5.1
       - name: Setup Godot Engine
         uses: chickensoft-games/setup-godot@v2
         with:
           version: 4.5.1
           use-dotnet: false
 
-      # 7. تحميل وفك قوالب التصدير للأندرويد سحابياً
+      # 8. تحميل وفك قوالب التصدير للأندرويد سحابياً
       - name: Download Export Templates
         run: |
           mkdir -p ~/.local/share/godot/export_templates/4.5.1.stable
@@ -61,7 +66,7 @@ jobs:
           mv /tmp/godot_templates/templates/* ~/.local/share/godot/export_templates/4.5.1.stable/
           rm -rf /tmp/godot_templates Godot_v4.5.1-stable_export_templates.tpz
 
-      # 8. الفحص والحقن القسري الكامل لبيانات التكوين والمعماريات في ملف التصدير
+      # 9. سكربت بايثون ذكي لفحص وحقن كامل إعدادات الـ Keystore والمعماريات لتفادي خطأ التكوين المبتور
       - name: Auto Fix Export Presets Config
         shell: python
         run: |
@@ -119,23 +124,30 @@ jobs:
                           
               with open(preset_path, "w", encoding="utf-8") as f:
                   f.writelines(output)
-              print("export_presets.cfg forcefully updated with complete configurations.")
+              print("export_presets.cfg forcefully fixed.")
           else:
-              print("Critical Error: export_presets.cfg not found!")
+              print("export_presets.cfg not found, creating a fresh one.")
+              with open(preset_path, "w", encoding="utf-8") as f:
+                  f.write('[preset.0]\nname="Android"\nplatform="Android"\nrunnable=true\n')
+                  f.write('package/unique_name="com.yazn.mutasmproject"\n')
+                  f.write('custom_template/use_custom_build=false\n')
+                  f.write('keystore/debug="/home/runner/.android/debug.keystore"\n')
+                  f.write('keystore/debug_user="androiddebugkey"\n')
+                  f.write('keystore/debug_password="android"\n')
+                  f.write('architectures/armeabi-v7a=true\n')
+                  f.write('architectures/arm64-v8a=true\n')
+                  f.write('architectures/x86=false\n')
+                  f.write('architectures/x86_64=false\n')
 
-      # 9. تشغيل خادم ADB لمنع خطأ Connection refused ومنع توقف البناء
+      # 10. تشغيل خادم ADB المضاف حديثاً للمسار لتخطي مشكلة Connection Refused
       - name: Start ADB Server
         run: adb start-server
 
-      # 10. إنشاء مجلد المخرجات
-      - name: Create Build Directory
-        run: mkdir -p build/android
-
-      # 11. تصدير ملف الـ APK بنمط التصحيح (Debug)
+      # 11. عملية تصدير ملف الـ APK النهائية بنمط التصحيح (Debug) وبشكل Headless صامت
       - name: Export Android APK
         run: godot --headless --export-debug "Android" build/android/game.apk
 
-      # 12. رفع ملف الـ APK لتتمكن من تحميله مباشرة
+      # 12. رفع ملف الـ APK المكتمل لتتمكن من تحميله مباشرة من صفحة الـ Actions
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
