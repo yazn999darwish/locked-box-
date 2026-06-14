@@ -21,7 +21,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # 3. توليد مجلد الأندرويد ومجلد إعدادات جودو في النظام السحابي
+      # 3. إنشاء المجلدات المطلوبة للنظام
       - name: Create Required Directories
         run: |
           mkdir -p ~/.config/godot
@@ -61,7 +61,7 @@ jobs:
           mv /tmp/godot_templates/templates/* ~/.local/share/godot/export_templates/4.5.1.stable/
           rm -rf /tmp/godot_templates Godot_v4.5.1-stable_export_templates.tpz
 
-      # 8. فحص وتصحيح ملف إعدادات التصدير وتطهيره من أي تعارض في المفاتيح
+      # 8. الفحص والحقن القسري الكامل لبيانات التكوين والمعماريات في ملف التصدير
       - name: Auto Fix Export Presets Config
         shell: python
         run: |
@@ -69,54 +69,73 @@ jobs:
           preset_path = "export_presets.cfg"
           if os.path.exists(preset_path):
               with open(preset_path, "r", encoding="utf-8") as f:
-                  content = f.read()
+                  lines = f.readlines()
               
-              print("--- Original export_presets.cfg ---")
-              print(content)
+              output = []
+              in_android = False
+              forced_keys = {
+                  'package/unique_name': '"com.yazn.mutasmproject"',
+                  'custom_template/use_custom_build': 'false',
+                  'keystore/debug': '"/home/runner/.android/debug.keystore"',
+                  'keystore/debug_user': '"androiddebugkey"',
+                  'keystore/debug_password': '"android"',
+                  'architectures/armeabi-v7a': 'true',
+                  'architectures/arm64-v8a': 'true',
+                  'architectures/x86': 'false',
+                  'architectures/x86_64': 'false'
+              }
+              seen_keys = set()
               
-              lines = content.splitlines()
-              updated_lines = []
               for line in lines:
                   line_strip = line.strip()
-                  # تصحيح اسم الحزمة الافتراضي لمنع حظر جودو
-                  if line_strip.startswith("package/unique_name="):
-                      line = 'package/unique_name="com.yazn.mutasmproject"'
-                  # إيقاف البناء المخصص لضمان استخدام القوالب المستقرة المعرفة بالأعلى
-                  elif line_strip.startswith("custom_template/use_custom_build="):
-                      line = 'custom_template/use_custom_build=false'
-                  # تصفير شامل وكامل لجميع حقول المفاتيح محلياً لمنع التناقض والتعارض
-                  elif line_strip.startswith("keystore/debug="):
-                      line = 'keystore/debug=""'
-                  elif line_strip.startswith("keystore/debug_user="):
-                      line = 'keystore/debug_user=""'
-                  elif line_strip.startswith("keystore/debug_password="):
-                      line = 'keystore/debug_password=""'
-                  elif line_strip.startswith("keystore/release="):
-                      line = 'keystore/release=""'
-                  elif line_strip.startswith("keystore/release_user="):
-                      line = 'keystore/release_user=""'
-                  elif line_strip.startswith("keystore/release_password="):
-                      line = 'keystore/release_password=""'
-                  updated_lines.append(line)
-              
-              updated_content = "\n".join(updated_lines)
-              with open(preset_path, "w", encoding="utf-8") as f:
-                  f.write(updated_content)
+                  if line_strip.startswith("[preset."):
+                      if in_android:
+                          for k, v in forced_keys.items():
+                              if k not in seen_keys:
+                                  output.append(f"{k}={v}\n")
+                      in_android = False
+                      seen_keys.clear()
+                      output.append(line)
+                      continue
+                      
+                  if line_strip == 'platform="Android"':
+                      in_android = True
+                      output.append(line)
+                      continue
+                      
+                  if in_android and "=" in line:
+                      key = line_strip.split("=")[0].strip()
+                      if key in forced_keys:
+                          output.append(f"{key}={forced_keys[key]}\n")
+                          seen_keys.add(key)
+                          continue
                   
-              print("--- Updated export_presets.cfg ---")
-              print(updated_content)
+                  output.append(line)
+                  
+              if in_android:
+                  for k, v in forced_keys.items():
+                      if k not in seen_keys:
+                          output.append(f"{k}={v}\n")
+                          
+              with open(preset_path, "w", encoding="utf-8") as f:
+                  f.writelines(output)
+              print("export_presets.cfg forcefully updated with complete configurations.")
           else:
-              print("Critical Warning: export_presets.cfg not found at root directory!")
+              print("Critical Error: export_presets.cfg not found!")
 
-      # 9. إنشاء مجلد المخرجات
+      # 9. تشغيل خادم ADB لمنع خطأ Connection refused ومنع توقف البناء
+      - name: Start ADB Server
+        run: adb start-server
+
+      # 10. إنشاء مجلد المخرجات
       - name: Create Build Directory
         run: mkdir -p build/android
 
-      # 10. تصدير ملف الـ APK بنمط التصحيح (Debug)
+      # 11. تصدير ملف الـ APK بنمط التصحيح (Debug)
       - name: Export Android APK
         run: godot --headless --export-debug "Android" build/android/game.apk
 
-      # 11. رفع ملف الـ APK لتتمكن من تحميله مباشرة
+      # 12. رفع ملف الـ APK لتتمكن من تحميله مباشرة
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
