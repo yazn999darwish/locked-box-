@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true" # لتحديث بيئة العمل وتفادي تحذيرات Node.js القديمة
+
 jobs:
   build-android:
     runs-on: ubuntu-latest
@@ -21,7 +24,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # 3. تعريف مسارات الـ Android SDK وإضافتها للـ PATH ليتعرف النظام على أمر adb
+      # 3. تعريف مسارات الـ Android SDK وإضافتها للـ PATH
       - name: Setup Android SDK Paths
         run: |
           echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
@@ -34,12 +37,12 @@ jobs:
           mkdir -p ~/.android
           mkdir -p build/android
 
-      # 5. توليد ملف keystore الرقمي في المسار الصحيح
+      # 5. توليد ملف keystore الرقمي في المسار الصحيح للنظام السحابي
       - name: Generate Debug Keystore
         run: |
           keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
 
-      # 6. ضبط إعدادات جودو العامة للكشف عن مسار الـ SDK والمفاتيح بشكل مضمون وبدون أخطاء رموز
+      # 6. ضبط إعدادات جودو العامة للكشف عن مسار الـ SDK والمفاتيح
       - name: Configure Godot Editor Settings
         run: |
           echo '[gd_resource type="EditorSettings" format=3]' > ~/.config/godot/editor_settings-4.tres
@@ -50,7 +53,7 @@ jobs:
           echo 'export/android/debug_username = "androiddebugkey"' >> ~/.config/godot/editor_settings-4.tres
           echo 'export/android/debug_password = "android"' >> ~/.config/godot/editor_settings-4.tres
 
-          # 7. تثبيت محرك Godot الإصدار 4.5.1
+      # 7. تثبيت محرك Godot الإصدار المتوافق
       - name: Setup Godot Engine
         uses: chickensoft-games/setup-godot@v2
         with:
@@ -66,88 +69,81 @@ jobs:
           mv /tmp/godot_templates/templates/* ~/.local/share/godot/export_templates/4.5.1.stable/
           rm -rf /tmp/godot_templates Godot_v4.5.1-stable_export_templates.tpz
 
-      # 9. سكربت بايثون ذكي لفحص وحقن كامل إعدادات الـ Keystore والمعماريات لتفادي خطأ التكوين المبتور
-      - name: Auto Fix Export Presets Config
+      # 9. تدمير وبناء ملف الإعدادات الأصلي وحقن خيارات جودو 4 داخل [preset.0.options] بشكل قانوني ومضمون
+      - name: Force Clean Rewrite of Export Presets
         shell: python
         run: |
           import os
           preset_path = "export_presets.cfg"
-          if os.path.exists(preset_path):
-              with open(preset_path, "r", encoding="utf-8") as f:
-                  lines = f.readlines()
-              
-              output = []
-              in_android = False
-              forced_keys = {
-                  'package/unique_name': '"com.yazn.mutasmproject"',
-                  'custom_template/use_custom_build': 'false',
-                  'keystore/debug': '"/home/runner/.android/debug.keystore"',
-                  'keystore/debug_user': '"androiddebugkey"',
-                  'keystore/debug_password': '"android"',
-                  'architectures/armeabi-v7a': 'true',
-                  'architectures/arm64-v8a': 'true',
-                  'architectures/x86': 'false',
-                  'architectures/x86_64': 'false'
-              }
-              seen_keys = set()
-              
-              for line in lines:
-                  line_strip = line.strip()
-                  if line_strip.startswith("[preset."):
-                      if in_android:
-                          for k, v in forced_keys.items():
-                              if k not in seen_keys:
-                                  output.append(f"{k}={v}\n")
-                      in_android = False
-                      seen_keys.clear()
-                      output.append(line)
-                      continue
-                      
-                  if line_strip == 'platform="Android"':
-                      in_android = True
-                      output.append(line)
-                      continue
-                      
-                  if in_android and "=" in line:
-                      key = line_strip.split("=")[0].strip()
-                      if key in forced_keys:
-                          output.append(f"{key}={forced_keys[key]}\n")
-                          seen_keys.add(key)
-                          continue
-                  
-                  output.append(line)
-                  
-              if in_android:
-                  for k, v in forced_keys.items():
-                      if k not in seen_keys:
-                          output.append(f"{k}={v}\n")
-                          
-              with open(preset_path, "w", encoding="utf-8") as f:
-                  f.writelines(output)
-              print("export_presets.cfg forcefully fixed.")
-          else:
-              print("export_presets.cfg not found, creating a fresh one.")
-              with open(preset_path, "w", encoding="utf-8") as f:
-                  f.write('[preset.0]\nname="Android"\nplatform="Android"\nrunnable=true\n')
-                  f.write('package/unique_name="com.yazn.mutasmproject"\n')
-                  f.write('custom_template/use_custom_build=false\n')
-                  f.write('keystore/debug="/home/runner/.android/debug.keystore"\n')
-                  f.write('keystore/debug_user="androiddebugkey"\n')
-                  f.write('keystore/debug_password="android"\n')
-                  f.write('architectures/armeabi-v7a=true\n')
-                  f.write('architectures/arm64-v8a=true\n')
-                  f.write('architectures/x86=false\n')
-                  f.write('architectures/x86_64=false\n')
+          
+          config_content = """[preset.0]
+          name="Android"
+          platform="Android"
+          runnable=true
+          dedicated_server=false
+          custom_features=""
+          export_filter="all_resources"
+          include_filter=""
+          exclude_filter=""
+          export_path="build/android/game.apk"
 
-      # 10. تشغيل خادم ADB المضاف حديثاً للمسار لتخطي مشكلة Connection Refused
+          [preset.0.options]
+          architectures/armeabi-v7a=true
+          architectures/arm64-v8a=true
+          architectures/x86=false
+          architectures/x86_64=false
+          package/unique_name="com.yazn.mutasmproject"
+          package/name=""
+          package/signed=true
+          package/app_category=0
+          package/retain_data_on_uninstall=false
+          package/exclude_from_capture=false
+          version/code=1
+          version/name="1.0"
+          launcher_icon/main_release=""
+          launcher_icon/main_debug=""
+          launcher_icon/adaptive_foreground_release=""
+          launcher_icon/adaptive_foreground_debug=""
+          launcher_icon/adaptive_background_release=""
+          launcher_icon/adaptive_background_debug=""
+          graphics/opengl_es3_back_buffer_format=1
+          screen/orientation=0
+          screen/support_large_screens=true
+          screen/immersive_mode=true
+          secret/release_user=""
+          secret/release_password=""
+          keystore/debug="/home/runner/.android/debug.keystore"
+          keystore/debug_user="androiddebugkey"
+          keystore/debug_password="android"
+          keystore/release=""
+          keystore/release_user=""
+          keystore/release_password=""
+          project_settings/backward_compatible_splash_screen=true
+          custom_template/debug=""
+          custom_template/release=""
+          custom_template/use_custom_build=false
+          custom_template/export_format=0
+          plugins/android_plugins=PackedStringArray()
+          permissions/custom_permissions=PackedStringArray()
+          capabilities/xr_features=0
+          capabilities/xr_hand_tracking=0
+          user_data_backup/allow_backup=true
+          command_line/extra_args=""
+          """
+          
+          with open(preset_path, "w", encoding="utf-8") as f:
+              f.write(config_content)
+          print("export_presets.cfg has been cleanly overwritten with pristine Godot 4 structure.")
+
+      # 10. تشغيل خادم ADB لمنع خطأ Connection refused
       - name: Start ADB Server
         run: adb start-server
 
-      # 11. عملية تصدير ملف الـ APK النهائية بنمط التصحيح (Debug) وبشكل Headless صامت
+      # 11. عملية تصدير ملف الـ APK النهائية بنمط التصحيح (Debug) وبشكل صامت
       - name: Export Android APK
         run: godot --headless --export-debug "Android" build/android/game.apk
 
-      # 12. رفع ملف الـ APK المكتمل لتتمكن من تحميله مباشرة من صفحة الـ Actions
+      # 12. رفع ملف الـ APK الناتجة لتتمكن من تحميلها مباشرة
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
