@@ -46,20 +46,41 @@ jobs:
           mv /tmp/godot_templates/templates/* ~/.local/share/godot/export_templates/4.5.1.stable/
           rm -rf /tmp/godot_templates Godot_v4.5.1-stable_export_templates.tpz
 
-      # 6. توليد ملف التوقيع debug.keystore تلقائياً ليتوافق مع الإعدادات
+      # 6. توليد ملف التوقيع debug.keystore في جذر المشروع
       - name: Generate Debug Keystore
         run: |
           keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
 
-      # 7. إنشاء مجلد المخرجات للعبة
+      # 7. ربط ملف الإعدادات بمفتاح التوقيع المولد تلقائياً وتصحيح المسارات
+      - name: Force Keystore Paths in Export Presets
+        shell: python
+        run: |
+          import os, re
+          preset_path = "export_presets.cfg"
+          if os.path.exists(preset_path):
+              with open(preset_path, "r") as f:
+                  text = f.read()
+              
+              # استبدال وتصحيح الإعدادات بدقة متناهية لتوجه المحرك إلى المفتاح المولد سحابياً
+              text = re.sub(r'keystore/debug\s*=\s*".*"', 'keystore/debug="res://debug.keystore"', text)
+              text = re.sub(r'keystore/debug_user\s*=\s*".*"', 'keystore/debug_user="android"', text)
+              text = re.sub(r'keystore/debug_password\s*=\s*".*"', 'keystore/debug_password="android"', text)
+              
+              with open(preset_path, "w") as f:
+                  f.write(text)
+              print("export_presets.cfg has been successfully aligned with cloud keystore.")
+          else:
+              print("Warning: export_presets.cfg not found in root directory!")
+
+      # 8. إنشاء مجلد المخرجات للعبة
       - name: Create Build Directory
         run: mkdir -p build/android
 
-      # 8. بدء عملية التصدير الفعالة واستخراج ملف الـ APK التجريبي
+      # 9. بدء عملية التصدير الفعالة واستخراج ملف الـ APK التجريبي
       - name: Export Android APK
         run: godot --headless --export-debug "Android" build/android/game.apk
 
-      # 9. رفع ملف الـ APK النهائي إلى سيرفرات جيتهاب لتتمكن من تحميله
+      # 10. رفع ملف الـ APK النهائي إلى سيرفرات جيتهاب لتتمكن من تحميله
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
