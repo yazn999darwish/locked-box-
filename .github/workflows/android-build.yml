@@ -1,9 +1,9 @@
-name: "Godot Android Cloud Build"
+Name: "Godot Android Cloud Build"
 
 on:
   push:
     branches:
-      - main  # اجعلها master إذا كان هذا اسم الفرع الرئيسي لديك
+      - main
 
 jobs:
   build-android:
@@ -27,10 +27,10 @@ jobs:
           mkdir -p ~/.config/godot
           echo '[gd_resource type="EditorSettings" format=3]' > ~/.config/godot/editor_settings-4.tres
           echo '' >> ~/.config/godot/editor_settings-4.tres
-          echo '[resource]' >> ~/.config/godot/editor_settings-4.tres
+          echo '[resource]' >> >> ~/.config/godot/editor_settings-4.tres
           echo "export/android/android_sdk_path = \"$ANDROID_HOME\"" >> ~/.config/godot/editor_settings-4.tres
 
-      # 4. تثبيت محرك Godot (تأكد من كتابة رقم نسختك بدقة مكان 4.5.1)
+      # 4. تثبيت محرك Godot
       - name: Setup Godot Engine
         uses: chickensoft-games/setup-godot@v2
         with:
@@ -55,9 +55,9 @@ jobs:
       - name: Create Build Directory
         run: mkdir -p build/android
 
-      # 8. بدء عملية التصدير الفعالة واستخراج ملف الـ APK
+      # 8. بدء عملية التصدير الفعالة واستخراج ملف الـ APK التجريبي
       - name: Export Android APK
-        run: godot --headless --export-release "Android" build/android/game.apk
+        run: godot --headless --export-debug "Android" build/android/game.apk
 
       # 9. رفع ملف الـ APK النهائي إلى سيرفرات جيتهاب لتتمكن من تحميله
       - name: Upload APK Artifact
