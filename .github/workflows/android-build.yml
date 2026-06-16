@@ -69,8 +69,8 @@ jobs:
           mv /tmp/godot_templates/templates/* ~/.local/share/godot/export_templates/4.5.1.stable/
           rm -rf /tmp/godot_templates Godot_v4.5.1-stable_export_templates.tpz
 
-      # 9. حقن مسارات الـ Keystore داخل ملفك الأصلي بدقة دون إتلاف بنيته
-      - name: Inject Cloud Keystore Paths into Presets
+      # 9. تنظيف وحقن المسارات وإصلاح أخطاء التهيئة داخل ملف الـ Presets الأصلي
+      - name: Fix and Inject Cloud Configurations into Presets
         shell: python
         run: |
           import os
@@ -84,18 +84,23 @@ jobs:
 
           new_lines = []
           for line in lines:
-              # استبدال المسارات الافتراضية بالمسارات المطلقة داخل الـ Runner لـ GitHub Actions
+              # 1. تحويل مسار مفتاح التصحيح إلى البيئة السحابية
               if line.startswith('keystore/debug='):
                   line = 'keystore/debug="/home/runner/.android/debug.keystore"\n'
-              elif line.startswith('keystore/debug_user='):
-                  line = 'keystore/debug_user="androiddebugkey"\n'
-              elif line.startswith('keystore/debug_password='):
-                  line = 'keystore/debug_password="android"\n'
+              
+              # 2. تصفير مفتاح الـ Release لأن جودو يفحصه ويسبب فشل البناء إذا لم يجد الملف
+              elif line.startswith('keystore/release='):
+                  line = 'keystore/release=""\n'
+              
+              # 3. إصلاح خطأ الاسم الفارغ للإصدار (مرفوض تماماً في الأندرويد)
+              elif line.startswith('version/name='):
+                  line = 'version/name="1.0.0"\n'
+                  
               new_lines.append(line)
 
           with open(preset_path, "w", encoding="utf-8") as f:
               f.writelines(new_lines)
-          print("Successfully injected cloud keystore paths into the pristine configuration file.")
+          print("Successfully patched export_presets.cfg and bypassed configuration errors.")
 
       # 10. تشغيل خادم ADB لمنع خطأ Connection refused
       - name: Start ADB Server
