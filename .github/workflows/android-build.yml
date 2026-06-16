@@ -42,7 +42,7 @@ jobs:
         run: |
           keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
 
-      # 6. ضبط إعدادات جودو العامة للكشف عن مسار الـ SDK والمفاتيح
+      # 6. ضبط إعدادات جودو العامة (Editor Settings) لتوجيه المحرك للمفاتيح والـ SDK تلقائياً
       - name: Configure Godot Editor Settings
         run: |
           echo '[gd_resource type="EditorSettings" format=3]' > ~/.config/godot/editor_settings-4.tres
@@ -69,56 +69,15 @@ jobs:
           mv /tmp/godot_templates/templates/* ~/.local/share/godot/export_templates/4.5.1.stable/
           rm -rf /tmp/godot_templates Godot_v4.5.1-stable_export_templates.tpz
 
-      # 9. إصلاح شامل وتطهير لملف الـ Presets من القيم الافتراضية المرفوضة
-      - name: Hard Fix Export Presets Configuration
-        shell: python
-        run: |
-          import os
-
-          preset_path = "export_presets.cfg"
-          if not os.path.exists(preset_path):
-              raise FileNotFoundError(f"Error: {preset_path} not found in root!")
-
-          with open(preset_path, "r", encoding="utf-8") as f:
-              lines = f.readlines()
-
-          new_lines = []
-          for line in lines:
-              # تحويل مسار مفتاح التصحيح للبيئة السحابية
-              if line.startswith('keystore/debug='):
-                  line = 'keystore/debug="/home/runner/.android/debug.keystore"\n'
-              
-              # تصفير مسار الـ Release لمنع فحص وجود الملف
-              elif line.startswith('keystore/release='):
-                  line = 'keystore/release=""\n'
-              
-              # تعيين رقم إصدار حقيقي
-              elif line.startswith('version/name='):
-                  line = 'version/name="1.0.0"\n'
-              
-              # استبدال com.example المرفوضة باسم حزمة قانوني ومقبول
-              elif line.startswith('package/unique_name='):
-                  line = 'package/unique_name="com.yazn.mutasmproject"\n'
-              
-              # إعطاء اسم حقيقي للتطبيق بدلاً من تركه فارغاً
-              elif line.startswith('package/name='):
-                  line = 'package/name="MyGodotGame"\n'
-                  
-              new_lines.append(line)
-
-          with open(preset_path, "w", encoding="utf-8") as f:
-              f.writelines(new_lines)
-          print("All hidden configuration errors (com.example & empty names) have been aggressively patched.")
-
-      # 10. تشغيل خادم ADB لمنع خطأ Connection refused
+      # 9. تشغيل خادم ADB لمنع خطأ Connection refused
       - name: Start ADB Server
         run: adb start-server
 
-      # 11. عملية تصدير ملف الـ APK النهائية بنمط التصحيح (Debug) وبشكل صامت
+      # 10. عملية تصدير ملف الـ APK النهائية بنمط التصحيح (Debug) وبشكل صامت وبإعدادات برستيج ونظيفة
       - name: Export Android APK
         run: godot --headless --export-debug "Android" build/android/game.apk
 
-      # 12. رفع ملف الـ APK الناتجة لتتمكن من تحميلها مباشرة
+      # 11. رفع ملف الـ APK الناتجة لتتمكن من تحميلها مباشرة
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
