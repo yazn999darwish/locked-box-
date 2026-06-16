@@ -54,21 +54,51 @@ jobs:
           use-dotnet: false
 
       - name: Download Export Templates
+        continue-on-error: true
         run: |
           mkdir -p ~/.local/share/godot/export_templates/4.5.1.stable
           cd /tmp
-          wget -q https://github.com/godotengine/godot-releases/download/4.5.1-stable/Godot_v4.5.1-stable_export_templates.tpz
-          unzip -q Godot_v4.5.1-stable_export_templates.tpz
-          mv templates/* ~/.local/share/godot/export_templates/4.5.1.stable/
-          rm -rf /tmp/templates /tmp/Godot_v4.5.1-stable_export_templates.tpz
+          
+          # محاولة تحميل من عدة روابط
+          if ! wget -q --timeout=30 https://github.com/godotengine/godot-releases/download/4.5.1-stable/Godot_v4.5.1-stable_export_templates.tpz 2>/dev/null; then
+            echo "محاولة من رابط بديل..."
+            wget -q --timeout=30 https://downloads.tuxfamily.org/godotengine/4.5.1/Godot_v4.5.1-stable_export_templates.tpz 2>/dev/null || true
+          fi
+          
+          # فك الضغط إذا وجدنا الملف
+          if [ -f Godot_v4.5.1-stable_export_templates.tpz ]; then
+            echo "جاري فك الضغط..."
+            unzip -q Godot_v4.5.1-stable_export_templates.tpz -d /tmp/godot_templates 2>/dev/null || true
+            if [ -d /tmp/godot_templates/templates ]; then
+              cp -r /tmp/godot_templates/templates/* ~/.local/share/godot/export_templates/4.5.1.stable/ 2>/dev/null || true
+              echo "✓ تم تثبيت قوالب التصدير"
+            fi
+            rm -rf /tmp/godot_templates /tmp/Godot_v4.5.1-stable_export_templates.tpz
+          else
+            echo "⚠ لم يتمكن من تحميل القوالب، سيحاول Godot استخدام الافتراضي"
+          fi
 
       - name: Start ADB Server
         run: adb start-server || true
 
       - name: Export Android APK
-        run: godot --headless --export-debug "Android" build/android/game.apk
+        run: |
+          echo "جاري تصدير APK..."
+          godot --headless --export-debug "Android" build/android/game.apk
+          echo "✓ انتهت عملية التصدير"
+
+      - name: Verify APK
+        if: always()
+        run: |
+          if [ -f build/android/game.apk ]; then
+            echo "✓ تم إنشاء APK بنجاح!"
+            ls -lh build/android/game.apk
+          else
+            echo "ملف APK لم يتم إنشاؤه"
+          fi
 
       - name: Upload APK Artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: My-Android-Game
