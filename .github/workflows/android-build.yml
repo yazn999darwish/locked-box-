@@ -69,38 +69,46 @@ jobs:
           mv /tmp/godot_templates/templates/* ~/.local/share/godot/export_templates/4.5.1.stable/
           rm -rf /tmp/godot_templates Godot_v4.5.1-stable_export_templates.tpz
 
-      # 9. تنظيف وحقن المسارات وإصلاح أخطاء التهيئة داخل ملف الـ Presets الأصلي
-      - name: Fix and Inject Cloud Configurations into Presets
+      # 9. إصلاح شامل وتطهير لملف الـ Presets من القيم الافتراضية المرفوضة
+      - name: Hard Fix Export Presets Configuration
         shell: python
         run: |
           import os
 
           preset_path = "export_presets.cfg"
           if not os.path.exists(preset_path):
-              raise FileNotFoundError(f"Error: {preset_path} not found in the root directory!")
+              raise FileNotFoundError(f"Error: {preset_path} not found in root!")
 
           with open(preset_path, "r", encoding="utf-8") as f:
               lines = f.readlines()
 
           new_lines = []
           for line in lines:
-              # 1. تحويل مسار مفتاح التصحيح إلى البيئة السحابية
+              # تحويل مسار مفتاح التصحيح للبيئة السحابية
               if line.startswith('keystore/debug='):
                   line = 'keystore/debug="/home/runner/.android/debug.keystore"\n'
               
-              # 2. تصفير مفتاح الـ Release لأن جودو يفحصه ويسبب فشل البناء إذا لم يجد الملف
+              # تصفير مسار الـ Release لمنع فحص وجود الملف
               elif line.startswith('keystore/release='):
                   line = 'keystore/release=""\n'
               
-              # 3. إصلاح خطأ الاسم الفارغ للإصدار (مرفوض تماماً في الأندرويد)
+              # تعيين رقم إصدار حقيقي
               elif line.startswith('version/name='):
                   line = 'version/name="1.0.0"\n'
+              
+              # استبدال com.example المرفوضة باسم حزمة قانوني ومقبول
+              elif line.startswith('package/unique_name='):
+                  line = 'package/unique_name="com.yazn.mutasmproject"\n'
+              
+              # إعطاء اسم حقيقي للتطبيق بدلاً من تركه فارغاً
+              elif line.startswith('package/name='):
+                  line = 'package/name="MyGodotGame"\n'
                   
               new_lines.append(line)
 
           with open(preset_path, "w", encoding="utf-8") as f:
               f.writelines(new_lines)
-          print("Successfully patched export_presets.cfg and bypassed configuration errors.")
+          print("All hidden configuration errors (com.example & empty names) have been aggressively patched.")
 
       # 10. تشغيل خادم ADB لمنع خطأ Connection refused
       - name: Start ADB Server
